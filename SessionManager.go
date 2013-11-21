@@ -6,13 +6,15 @@ import (
 	"net/http"
 )
 
+var cookieName string = "unframed"
+var cookieStore *sessions.CookieStore = sessions.NewCookieStore([]byte("candy"))
+
 type SessionManager struct {
 	session      *sessions.Session
 	LoginFailure bool
 }
 
 func (dm *SessionManager) SetSession(r *http.Request) {
-	cookieName := "unframed"
 	var err error
 	dm.session, err = cookieStore.Get(r, cookieName)
 	if err != nil {

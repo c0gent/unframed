@@ -19,10 +19,10 @@ type UfStmtsByName map[string]*UfStmt
 
 type StatementStore struct {
 	Stmts    UfStmtsByName
-	dbHandle *DbHandler
+	dbHandle *DbHandle
 }
 
-func (ss *StatementStore) init(db *DbHandler) *StatementStore {
+func (ss *StatementStore) init(db *DbHandle) *StatementStore {
 	ss.dbHandle = db
 	ss.Stmts = make(UfStmtsByName)
 	return ss
