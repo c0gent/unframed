@@ -2,6 +2,7 @@ package unframed
 
 import (
 	"database/sql"
+	"errors"
 	"github.com/nsan1129/auctionLog/log"
 	"reflect"
 )
@@ -9,10 +10,10 @@ import (
 //"github.com/nsan1129/auctionLog/log"
 
 type DataAdapter struct {
-	SessionManager
+	Net *NetHandle
 }
 
-func (a DataAdapter) query(stmt *UfStmt, p ...interface{}) *sql.Rows {
+func (a *DataAdapter) queryStmt(stmt *UfStmt, p ...interface{}) *sql.Rows {
 	rows, err := stmt.Query(p...)
 	if err != nil {
 		panic(err)
@@ -20,34 +21,38 @@ func (a DataAdapter) query(stmt *UfStmt, p ...interface{}) *sql.Rows {
 	return rows
 }
 
-func (a DataAdapter) QueryRow(stmt *UfStmt, p ...interface{}) *sql.Row {
+func (a *DataAdapter) QueryRow(stmt *UfStmt, p ...interface{}) *sql.Row {
 	row := stmt.QueryRow(p...)
 	return row
 }
 
-func (a DataAdapter) scan(rows *sql.Rows, f ...interface{}) {
+func (a *DataAdapter) scan(rows *sql.Rows, f ...interface{}) {
 	err := rows.Scan(f...)
 	if err != nil {
 		log.Error(err)
 	}
 }
 
-func (a DataAdapter) ScanRow(row *sql.Row, f ...interface{}) {
+func (a *DataAdapter) ScanRow(row *sql.Row, f ...interface{}) {
 	err := row.Scan(f...)
 	if err != nil {
 		log.Error(err)
 	}
 }
 
-func (a DataAdapter) Exec(stmt *UfStmt, p ...interface{}) {
+func (a *DataAdapter) Exec(stmt *UfStmt, p ...interface{}) {
 	_, err := stmt.Exec(p...)
 	if err != nil {
 		log.Error(err)
 	}
 }
 
-func (a DataAdapter) Query(newStruct func() interface{}, stmt *UfStmt, p ...interface{}) {
-	rs := a.query(stmt, p...)
+func (a *DataAdapter) Query(newStruct func() interface{}, stmt *UfStmt, p ...interface{}) {
+	if stmt == nil {
+		log.Error(errors.New("unframed.DataAdapter.Query called with nil *UfStmt"))
+		return
+	}
+	rs := a.queryStmt(stmt, p...)
 	defer rs.Close()
 
 	for rs.Next() {
@@ -62,6 +67,37 @@ type structField struct {
 
 type structFields struct {
 	fields map[string]*structField
+}
+
+func getTargets(ds interface{}) (stf []interface{}) {
+
+	/*
+		dsType := reflect.TypeOf(ds)
+		if dsType.Kind() == reflect.Ptr {
+			dsType = dsType.Elem()
+		}
+
+		if dsType.Kind() != reflect.Struct {
+			log.Error(dsType.Kind(), "isn't a struct.")
+			return
+		}
+	*/
+
+	dsValue := reflect.ValueOf(ds).Elem()
+
+	for i := 0; i < dsValue.NumField(); i++ {
+
+		/*
+			structField := dsType.Field(i)
+
+			if structField.PkgPath != "" {
+				continue
+			}
+		*/
+
+		stf = append(stf, dsValue.Field(i).Addr().Interface())
+	}
+	return
 }
 
 /*
@@ -99,32 +135,3 @@ func getFields(ds interface{}) (sfs *structFields) {
 }
 
 */
-
-func getTargets(ds interface{}) (stf []interface{}) {
-
-	dsType := reflect.TypeOf(ds)
-	dsValue := reflect.ValueOf(ds).Elem()
-
-	if dsType.Kind() == reflect.Ptr {
-		dsType = dsType.Elem()
-	}
-	/*
-		if dsType.Kind() != reflect.Struct {
-			log.Error(dsType.Kind(), "isn't a struct.")
-			return
-		}
-	*/
-
-	for i := 0; i < dsType.NumField(); i++ {
-
-		structField := dsType.Field(i)
-
-		if structField.PkgPath != "" {
-			continue
-		}
-
-		fieldAddr := dsValue.Field(i).Addr().Interface()
-		stf = append(stf, fieldAddr)
-	}
-	return
-}

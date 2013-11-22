@@ -2,7 +2,7 @@ package unframed
 
 import (
 	"compress/gzip"
-	"github.com/gorilla/pat"
+	"github.com/gorilla/mux"
 	"io"
 	"net/http"
 	"strings"
@@ -10,32 +10,38 @@ import (
 
 func NewRouter() *Router {
 	r := new(Router)
-	r.pat = pat.New()
+	r.Router = mux.NewRouter()
 	return r
 }
 
 type Router struct {
-	pat *pat.Router
+	*mux.Router
 }
 
 func (r *Router) Get(Path string, HandlerFunc http.HandlerFunc) {
-	r.pat.Get(Path, Zhhf(HandlerFunc))
+	r.Router.HandleFunc(Path, Zhhf(HandlerFunc)).Methods("GET")
 }
-
 func (r *Router) Post(Path string, HandlerFunc http.HandlerFunc) {
-	r.pat.Post(Path, Zhhf(HandlerFunc))
+	r.Router.HandleFunc(Path, Zhhf(HandlerFunc)).Methods("POST")
 }
-
 func (r *Router) Dir(DirPath string) {
 	UrlPath := "/" + DirPath
-	r.pat.PathPrefix(UrlPath).Handler(Mah(http.StripPrefix(UrlPath, http.FileServer(http.Dir(DirPath)))))
+	r.Router.PathPrefix(UrlPath).Handler(Mah(http.StripPrefix(UrlPath, http.FileServer(http.Dir(DirPath)))))
 }
-
 func (r *Router) Serve(PortNo string) {
-	http.Handle("/", r.pat)
+	http.Handle("/", r.Router)
 	if err := http.ListenAndServe(":"+PortNo, nil); err != nil {
 		panic(err)
 	}
+}
+
+func (r *Router) Subrouter(pathPrefix string) *Router {
+	return &Router{r.Router.PathPrefix(pathPrefix).Subrouter()}
+}
+
+func (n *NetHandle) QueryUrl(s string, r *http.Request) (i int) {
+	i = Atoi(mux.Vars(r)["Id"])
+	return
 }
 
 type gzipResponseWriter struct {
