@@ -1,7 +1,9 @@
 package unframed
 
 import (
+	"encoding/json"
 	"github.com/nsan1129/auctionLog/log"
+	"io/ioutil"
 	"strconv"
 )
 
@@ -10,5 +12,37 @@ func Atoi(s string) (i int) {
 	if err != nil {
 		log.Error("unframed.Atoi; string:", s, "int:", i, "][", err)
 	}
+	return
+}
+
+type Config struct {
+	DbType,
+	ConnStr,
+	ListenPort string
+}
+
+func WriteConfig(cfg *Config, cfgFile string) {
+
+	file, err := json.Marshal(cfg)
+	if err != nil {
+		panic(err)
+	}
+
+	if err = ioutil.WriteFile(cfgFile, file, 0644); err != nil {
+		panic(err)
+	}
+}
+
+func ReadConfig(cfgFile string) (cfg *Config) {
+	file, err := ioutil.ReadFile(cfgFile)
+	if err != nil {
+		panic("Openining Config Failed *** " + cfgFile + " *** \n" + err.Error())
+	}
+
+	cfg = new(Config)
+	if err = json.Unmarshal(file, cfg); err != nil {
+		panic("Parsing Config Failed *** " + cfgFile + " *** \n" + err.Error())
+	}
+
 	return
 }
