@@ -8,6 +8,12 @@ import (
 	"time"
 )
 
+type tmplDataWrapper struct {
+	Data  interface{}
+	Net   *NetHandle
+	Sdata []interface{}
+}
+
 type NetHandle struct {
 	Decoder *schema.Decoder
 	*Router
@@ -19,8 +25,13 @@ func (n *NetHandle) RegType(t interface{}) {
 	gob.Register(t)
 }
 
-func (n *NetHandle) ExeTmpl(w http.ResponseWriter, templateName string, templateData interface{}) {
-	tw := &tmplDataWrapper{templateData, n}
+func (n *NetHandle) ExeTmpl(w http.ResponseWriter, templateName string, templateData ...interface{}) {
+	var tw *tmplDataWrapper
+	if len(templateData) == 1 {
+		tw = &tmplDataWrapper{Data: templateData[0], Net: n}
+	} else {
+		tw = &tmplDataWrapper{Data: templateData[0], Net: n, Sdata: templateData[1:]}
+	}
 	err := n.templates.ExecuteTemplate(w, templateName, tw)
 	if err != nil {
 		log.Error(err)
@@ -31,7 +42,7 @@ func (n *NetHandle) PrettyDate(t time.Time, style int) (datestring string) {
 	case 0:
 		datestring = t.Format("2006/01/02 15:04:05 MST")
 	case 1:
-		datestring = t.Format("15:04 Jan-02")
+		datestring = t.Format("Jan 02 15:04")
 	case 2:
 		datestring = t.Format("2006-Jan-02 15:04:05 MST")
 	default:
@@ -49,6 +60,10 @@ func (n *NetHandle) DecodeForm(target interface{}, r *http.Request) {
 	if err != nil {
 		log.Error(err)
 	}
+}
+func (n *NetHandle) Compare(a int, b int) (x bool) {
+	x = a == b
+	return
 }
 
 func NewNet() (nn *NetHandle) {

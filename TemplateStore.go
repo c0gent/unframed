@@ -4,11 +4,6 @@ import (
 	"html/template"
 )
 
-type tmplDataWrapper struct {
-	Data interface{}
-	Net  *NetHandle
-}
-
 type TemplateStore struct {
 	templates     *template.Template
 	tmplFileNames []string
