@@ -3,15 +3,18 @@ package unframed
 import (
 	"encoding/gob"
 	"github.com/gorilla/schema"
-	"github.com/nsan1129/auctionLog/log"
+	"github.com/nsan1129/unframed/log"
 	"net/http"
 	"time"
 )
 
-type tmplDataWrapper struct {
-	Data  interface{}
-	Net   *NetHandle
-	Sdata []interface{}
+var DefaultPageTitle string = "Unframed Default Page Title"
+
+type TmplDataWrapper struct {
+	PageTitle string
+	Data      interface{}
+	Net       *NetHandle
+	Sdata     []interface{}
 }
 
 type NetHandle struct {
@@ -24,13 +27,11 @@ type NetHandle struct {
 func (n *NetHandle) RegType(t interface{}) {
 	gob.Register(t)
 }
-
 func (n *NetHandle) ExeTmpl(w http.ResponseWriter, templateName string, templateData ...interface{}) {
-	var tw *tmplDataWrapper
-	if len(templateData) == 1 {
-		tw = &tmplDataWrapper{Data: templateData[0], Net: n}
-	} else {
-		tw = &tmplDataWrapper{Data: templateData[0], Net: n, Sdata: templateData[1:]}
+	var tw *TmplDataWrapper
+	tw = &TmplDataWrapper{Data: templateData[0], Net: n, PageTitle: DefaultPageTitle}
+	if len(templateData) > 1 {
+		tw.Sdata = templateData[1:]
 	}
 	err := n.templates.ExecuteTemplate(w, templateName, tw)
 	if err != nil {
@@ -63,6 +64,11 @@ func (n *NetHandle) DecodeForm(target interface{}, r *http.Request) {
 }
 func (n *NetHandle) Compare(a int, b int) (x bool) {
 	x = a == b
+	return
+}
+func (n *NetHandle) NewTmplDataWrapper() (newTdw *TmplDataWrapper) {
+	newTdw = new(TmplDataWrapper)
+	newTdw.PageTitle = DefaultPageTitle
 	return
 }
 

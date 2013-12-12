@@ -40,7 +40,12 @@ func (r *Router) Subrouter(pathPrefix string) *Router {
 }
 
 func (n *NetHandle) QueryUrl(s string, r *http.Request) (i int) {
-	i = Atoi(mux.Vars(r)["Id"])
+	i = Atoi(mux.Vars(r)[s])
+	return
+}
+
+func (n *NetHandle) UrlVar(s string, r *http.Request) (v string) {
+	v = mux.Vars(r)[s]
 	return
 }
 

@@ -2,7 +2,7 @@ package unframed
 
 import (
 	"encoding/json"
-	"github.com/nsan1129/auctionLog/log"
+	"github.com/nsan1129/unframed/log"
 	"io/ioutil"
 	"strconv"
 )
@@ -36,7 +36,7 @@ func WriteConfig(cfg *Config, cfgFile string) {
 func ReadConfig(cfgFile string) (cfg *Config) {
 	file, err := ioutil.ReadFile(cfgFile)
 	if err != nil {
-		panic("Openining Config Failed *** " + cfgFile + " *** \n" + err.Error())
+		panic("Opening Config Failed *** " + cfgFile + " *** \n" + err.Error())
 	}
 
 	cfg = new(Config)
