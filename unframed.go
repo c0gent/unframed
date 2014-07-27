@@ -5,6 +5,7 @@ import (
 	"github.com/nsan1129/unframed/log"
 	"io/ioutil"
 	"strconv"
+	"os"
 )
 
 func Atoi(s string) (i int) {
@@ -16,6 +17,7 @@ func Atoi(s string) (i int) {
 }
 
 type Config struct {
+	Wd,
 	DbType,
 	ConnStr,
 	ListenPort string
@@ -44,5 +46,6 @@ func ReadConfig(cfgFile string) (cfg *Config) {
 		panic("Parsing Config Failed *** " + cfgFile + " *** \n" + err.Error())
 	}
 
+	os.Chdir(cfg.Wd)
 	return
 }

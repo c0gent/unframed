@@ -5,6 +5,7 @@ import (
 	"github.com/gorilla/schema"
 	"github.com/nsan1129/unframed/log"
 	"net/http"
+	"strconv"
 	"time"
 )
 
@@ -81,4 +82,9 @@ func NewNet() (nn *NetHandle) {
 	nn.RegType(new(time.Time))
 
 	return
+}
+
+func (n *NetHandle) TimeSince(t time.Time) (string) {
+	si := time.Since(t).Minutes()
+	return strconv.FormatFloat(si, 'f', 0, 64)
 }

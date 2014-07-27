@@ -6,6 +6,7 @@ import (
 	"io"
 	"net/http"
 	"strings"
+	//"github.com/nsan1129/unframed/log"
 )
 
 func NewRouter() *Router {
@@ -40,7 +41,11 @@ func (r *Router) Subrouter(pathPrefix string) *Router {
 }
 
 func (n *NetHandle) QueryUrl(s string, r *http.Request) (i int) {
-	i = Atoi(mux.Vars(r)[s])
+	requestVars := mux.Vars(r)
+	//temp_vars_map[s]
+	i = Atoi(requestVars[s])
+	//log.Message(s)
+	//log.Message(temp_vars_map[s])
 	return
 }
 
