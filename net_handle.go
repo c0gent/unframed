@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"strconv"
 	"time"
+	"strings"
 )
 
 var DefaultPageTitle string = "Unframed Default Page Title"
@@ -88,4 +89,23 @@ func NewNet() (nn *NetHandle) {
 func (n *NetHandle) TimeSince(t time.Time) (string) {
 	si := time.Since(t).Minutes()
 	return strconv.FormatFloat(si, 'f', 0, 64)
+}
+
+func (n *NetHandle) IntInStr(str string, v int, sep string) bool {
+	tmp := strings.Split(str,sep)
+	for _, ele := range tmp {
+		if (Atoi(ele) == v) {
+			//log.Message(ele, " = ", v)
+			return true
+		}
+	}
+	//log.Message("Nothing Found for IntInStr")
+	return false
+}
+
+func (n *NetHandle) StrAppendInt(old string, val int, sep string) (new string) {
+	tmp := strings.Split(old,sep)
+	tmp = append(tmp, Itoa(val))
+	new = strings.Join(tmp,sep)
+	return
 }
