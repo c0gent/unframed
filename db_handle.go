@@ -22,6 +22,7 @@ type DbHandle struct {
 	*sql.DB
 	cdd dbDialogue
 	*StatementStore
+	*SessionManager
 }
 
 func (d *DbHandle) init(driverName string, dataSourceName string) *DbHandle {
@@ -35,6 +36,7 @@ func (d *DbHandle) init(driverName string, dataSourceName string) *DbHandle {
 	d.cdd = Dbd.Pg
 
 	d.StatementStore = new(StatementStore).init(d)
+	//d.SessionManager = new(SessionManager)
 
 	return d
 }

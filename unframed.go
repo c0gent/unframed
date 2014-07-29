@@ -16,6 +16,11 @@ func Atoi(s string) (i int) {
 	return
 }
 
+func Itoa(i int) (s string) {
+	s = strconv.Itoa(i)
+	return
+}
+
 type Config struct {
 	Wd,
 	DbType,

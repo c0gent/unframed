@@ -78,6 +78,7 @@ func NewNet() (nn *NetHandle) {
 	nn.Decoder = schema.NewDecoder()
 	nn.Router = NewRouter()
 	nn.TemplateStore = NewTemplateStore()
+	nn.SessionManager = NewSessionManager()
 
 	nn.RegType(new(time.Time))
 

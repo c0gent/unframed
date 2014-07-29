@@ -40,11 +40,20 @@ func (a *DataAdapter) ScanRow(row *sql.Row, f ...interface{}) {
 	}
 }
 
+func (a *DataAdapter) Insert(stmt *UfStmt, p ...interface{}) (id int) {
+	err := stmt.QueryRow(p...).Scan(&id)
+	if err != nil {
+		log.Error(err)
+	}
+	return id
+}
+
 func (a *DataAdapter) Exec(stmt *UfStmt, p ...interface{}) {
 	_, err := stmt.Exec(p...)
 	if err != nil {
 		log.Error(err)
 	}
+	
 }
 
 func (a *DataAdapter) Query(newStruct func() interface{}, stmt *UfStmt, p ...interface{}) {
