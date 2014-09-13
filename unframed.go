@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"github.com/nsan1129/unframed/log"
 	"io/ioutil"
-	"strconv"
 	"os"
+	"strconv"
 )
 
 func Atoi(s string) (i int) {
@@ -53,4 +53,15 @@ func ReadConfig(cfgFile string) (cfg *Config) {
 
 	os.Chdir(cfg.Wd)
 	return
+}
+
+func File2Json(fileName string, v interface{}) {
+	file, err := ioutil.ReadFile(fileName)
+	if err != nil {
+		log.Error("Opening File Failed *** ", fileName, " *** \n", err.Error())
+	}
+
+	if err = json.Unmarshal(file, v); err != nil {
+		log.Error("Parsing JSON File Failed *** ", fileName, " *** \n", err.Error())
+	}
 }
