@@ -3,11 +3,11 @@ package unframed
 import (
 	"encoding/gob"
 	"github.com/gorilla/schema"
-	"github.com/nsan1129/unframed/log"
+	"github.com/c0gent/unframed/log"
 	"net/http"
 	"strconv"
-	"time"
 	"strings"
+	"time"
 )
 
 var DefaultPageTitle string = "Unframed Default Page Title"
@@ -31,10 +31,23 @@ func (n *NetHandle) RegType(t interface{}) {
 }
 func (n *NetHandle) ExeTmpl(w http.ResponseWriter, templateName string, templateData ...interface{}) {
 	var tw *TmplDataWrapper
-	tw = &TmplDataWrapper{Data: templateData[0], Net: n, PageTitle: DefaultPageTitle}
-	if len(templateData) > 1 {
-		tw.Sdata = templateData[1:]
-	}
+	tw = &TmplDataWrapper{Data: templateData, Net: n, PageTitle: DefaultPageTitle}
+
+	/*
+		for _, data := range templateData[1:] {
+			log.Message(data)
+		}
+	*/
+
+	/*
+		if len(templateData) > 1 {
+			tw.Data = templateData[0:]
+			for i, data := range templateData {
+				log.Message(i)
+				log.Message(data)
+			}
+		}
+	*/
 	err := n.templates.ExecuteTemplate(w, templateName, tw)
 	if err != nil {
 		log.Error(err)
@@ -86,15 +99,15 @@ func NewNet() (nn *NetHandle) {
 	return
 }
 
-func (n *NetHandle) TimeSince(t time.Time) (string) {
+func (n *NetHandle) TimeSince(t time.Time) string {
 	si := time.Since(t).Minutes()
 	return strconv.FormatFloat(si, 'f', 0, 64)
 }
 
 func (n *NetHandle) IntInStr(str string, v int, sep string) bool {
-	tmp := strings.Split(str,sep)
+	tmp := strings.Split(str, sep)
 	for _, ele := range tmp {
-		if (Atoi(ele) == v) {
+		if Atoi(ele) == v {
 			//log.Message(ele, " = ", v)
 			return true
 		}
@@ -104,8 +117,8 @@ func (n *NetHandle) IntInStr(str string, v int, sep string) bool {
 }
 
 func (n *NetHandle) StrAppendInt(old string, val int, sep string) (new string) {
-	tmp := strings.Split(old,sep)
+	tmp := strings.Split(old, sep)
 	tmp = append(tmp, Itoa(val))
-	new = strings.Join(tmp,sep)
+	new = strings.Join(tmp, sep)
 	return
 }

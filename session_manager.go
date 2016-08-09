@@ -2,7 +2,7 @@ package unframed
 
 import (
 	"github.com/gorilla/sessions"
-	"github.com/nsan1129/unframed/log"
+	"github.com/c0gent/unframed/log"
 	"net/http"
 )
 

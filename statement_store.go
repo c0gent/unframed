@@ -2,7 +2,7 @@ package unframed
 
 import (
 	"database/sql"
-	//"github.com/nsan1129/unframed/log"
+	//"github.com/c0gent/unframed/log"
 )
 
 // Map of [Database Dialogue Types (ints basically)] to: SQL Statement Strings
